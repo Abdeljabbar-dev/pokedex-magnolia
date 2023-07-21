@@ -55,7 +55,6 @@ const menuOptions = ["showAll", "filterByType"];
 const isLoading = ref(true);
 const results = ref([]);
 const nextUrl = ref("");
-// const baseURL = "https://pokeapi.co/api/v2";
 const pokemonTypes = ref([]);
 const selectedPokemonTypeUrl = ref(null);
 const currentMenu = ref(menuOptions[0]);
