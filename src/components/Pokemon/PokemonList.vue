@@ -48,7 +48,7 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import PokemonGrid from "./Pokemon/PokemonGrid";
+import PokemonGrid from "./PokemonGrid";
 const baseURL = "https://pokeapi.co/api/v2";
 const menuOptions = ["showAll", "filterByType"];
 
