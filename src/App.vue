@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js App" />
+  <PokemonList />
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import PokemonList from "./components/PokemonList.vue";
 
 export default {
   name: "App",
   components: {
-    HelloWorld,
+    PokemonList,
   },
 };
 </script>
