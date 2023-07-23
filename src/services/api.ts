@@ -1,4 +1,4 @@
-import { Pokemon } from "@/Types/Pokemon";
+import { Pokemon } from "../Types/Pokemon";
 import { ref } from "vue";
 
 const baseURL = "https://pokeapi.co/api/v2";
@@ -46,7 +46,6 @@ function useFetchData() {
       .then((res) => res.json())
       .then((data) => {
         const pokemonByType = data.pokemon.map((poke: any) => poke.pokemon);
-        console.log("data", pokemonByType);
         results.value = [...pokemonByType];
 
         isLoading.value = false;
