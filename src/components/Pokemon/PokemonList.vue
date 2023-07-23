@@ -49,60 +49,23 @@
 <script lang="ts">
 import { ref, onMounted, watch, defineComponent } from "vue";
 import PokemonGrid from "./PokemonGrid.vue";
-// import { Pokemon } from "";
-const baseURL = "https://pokeapi.co/api/v2";
+import useFetchData from "../../services/api";
 const menuOptions = ["showAll", "filterByType"];
 export default defineComponent({
   components: { PokemonGrid },
+
   setup() {
-    const isLoading = ref<boolean>(true);
-    const results = ref<any>([]);
-    const nextUrl = ref<string>("");
-    const pokemonTypes = ref<any>([]);
-    const selectedPokemonTypeUrl = ref<any>(null);
     const currentMenu = ref<string>(menuOptions[0]);
 
-    // fetch pokemons from pokedex api
-    function fetchData(): boolean {
-      if (nextUrl.value === "") {
-        fetch(`${baseURL}/pokemon/?limit=25`)
-          .then((res) => res.json())
-          .then((data) => {
-            nextUrl.value = data.next;
-            results.value = [...data.results];
-          });
-      } else {
-        fetch(`${nextUrl.value}`)
-          .then((res) => res.json())
-          .then((data) => {
-            nextUrl.value = data.next;
-            results.value = [...results.value, ...data.results];
-          });
-      }
-      return true;
-    }
-
-    // fetch pokemon type list
-    function fetchTypes(): boolean {
-      fetch(`${baseURL}/type`)
-        .then((res) => res.json())
-        .then((data) => {
-          pokemonTypes.value = [...data.results];
-        });
-      return true;
-    }
-
-    // fetch pokemon by type
-    function fetchByType() {
-      fetch(`${selectedPokemonTypeUrl.value}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const pokemonByType = data.pokemon.map((poke: any) => poke.pokemon);
-          results.value = [...pokemonByType];
-
-          isLoading.value = false;
-        });
-    }
+    const {
+      fetchData,
+      results,
+      selectedPokemonTypeUrl,
+      pokemonTypes,
+      isLoading,
+      fetchTypes,
+      fetchByType,
+    } = useFetchData();
 
     // fetch data on mounted
     onMounted(() => {
@@ -144,5 +107,4 @@ export default defineComponent({
     };
   },
 });
-/* eslint-disable */ 
 </script>

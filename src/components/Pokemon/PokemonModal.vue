@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { Pokemon } from "@/Types/Pokemon";
-import { PropType, defineComponent, onMounted, ref } from "vue";
+import { PropType, defineComponent, onMounted, ref, defineEmits } from "vue";
 
 export default defineComponent({
   props: {
@@ -53,8 +53,8 @@ export default defineComponent({
   },
 
   setup(props) {
-    const url = ref<string | undefined>("");
-    const pokemonData = ref<any>(null);
+    const url = ref<string>();
+    const pokemonData = ref();
     const isLoading = ref<boolean>(true);
 
     onMounted(() => {
@@ -87,8 +87,9 @@ export default defineComponent({
         });
     }
 
-    // emit to close modal
+    // Emit to close modal
     const emit = defineEmits(["close"]);
+
     function handleCloseModal(): void {
       emit("close");
     }
@@ -96,6 +97,7 @@ export default defineComponent({
       handleCloseModal,
       pokemonData,
       isLoading,
+      emit,
     };
   },
 });

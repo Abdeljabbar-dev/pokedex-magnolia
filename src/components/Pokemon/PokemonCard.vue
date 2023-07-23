@@ -11,12 +11,7 @@
       See Details
     </label>
 
-    <PokemonModal
-      v-if="isModalOpen"
-      :name="pokemon?.name"
-      :url="pokemon?.url"
-      @close="handleModal"
-    />
+    <PokemonModal v-if="isModalOpen" :pokemon="pokemon" @close="handleModal" />
   </div>
 </template>
 
@@ -33,12 +28,14 @@ export default defineComponent({
       required: false,
     },
   },
+
   setup() {
     const isModalOpen = ref<boolean>(false);
 
     function handleModal(): void {
       isModalOpen.value = !isModalOpen.value;
     }
+
     return {
       handleModal,
       isModalOpen,
