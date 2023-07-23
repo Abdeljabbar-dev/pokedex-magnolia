@@ -77,7 +77,6 @@ export default createStore<State>({
   },
   getters: {
     pokemons(state) {
-      // Implement your filtering logic here using the state.pokemons and other state properties if needed.
       return state.pokemons;
     },
     isLoading(state) {
