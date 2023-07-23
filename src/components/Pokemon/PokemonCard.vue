@@ -1,7 +1,7 @@
 <template>
   <div class="card max-w-md bg-base-100 shadow-xl">
     <div class="card-body flex">
-      <p class="capitalize text-2xl font-bold">{{ name }}</p>
+      <p class="capitalize text-2xl font-bold">{{ pokemon?.name }}</p>
     </div>
     <label
       for="my-modal-5"
@@ -13,24 +13,36 @@
 
     <PokemonModal
       v-if="isModalOpen"
-      :pokemon-name="name"
-      :pokemon-url="url"
+      :name="pokemon?.name"
+      :url="pokemon?.url"
       @close="handleModal"
     />
   </div>
 </template>
 
-<script setup>
+<script lang="ts">
 import PokemonModal from "./PokemonModal.vue";
-import { ref } from "vue";
-defineProps({
-  name: String,
-  url: String,
+import { PropType, defineComponent, ref } from "vue";
+import { Pokemon } from "../../Types/Pokemon";
+
+export default defineComponent({
+  components: { PokemonModal },
+  props: {
+    pokemon: {
+      type: Object as PropType<Pokemon>, // Specify the type using PropType
+      required: false,
+    },
+  },
+  setup() {
+    const isModalOpen = ref<boolean>(false);
+
+    function handleModal(): void {
+      isModalOpen.value = !isModalOpen.value;
+    }
+    return {
+      handleModal,
+      isModalOpen,
+    };
+  },
 });
-
-const isModalOpen = ref(false);
-
-function handleModal() {
-  isModalOpen.value = !isModalOpen.value;
-}
 </script>

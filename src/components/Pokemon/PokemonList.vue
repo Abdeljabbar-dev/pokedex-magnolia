@@ -32,7 +32,7 @@
           </option>
         </template>
       </select>
-      <PokemonGrid :results="results" />
+      <PokemonGrid :pokemons="results" />
       <button
         class="btn btn-warning max-w-md mt-16"
         @click="fetchData"
@@ -46,85 +46,103 @@
     </div>
   </div>
 </template>
-<script setup>
-import { ref, onMounted, watch } from "vue";
-import PokemonGrid from "./PokemonGrid";
+<script lang="ts">
+import { ref, onMounted, watch, defineComponent } from "vue";
+import PokemonGrid from "./PokemonGrid.vue";
+// import { Pokemon } from "";
 const baseURL = "https://pokeapi.co/api/v2";
 const menuOptions = ["showAll", "filterByType"];
+export default defineComponent({
+  components: { PokemonGrid },
+  setup() {
+    const isLoading = ref<boolean>(true);
+    const results = ref<any>([]);
+    const nextUrl = ref<string>("");
+    const pokemonTypes = ref<any>([]);
+    const selectedPokemonTypeUrl = ref<any>(null);
+    const currentMenu = ref<string>(menuOptions[0]);
 
-const isLoading = ref(true);
-const results = ref([]);
-const nextUrl = ref("");
-const pokemonTypes = ref([]);
-const selectedPokemonTypeUrl = ref(null);
-const currentMenu = ref(menuOptions[0]);
+    // fetch pokemons from pokedex api
+    function fetchData(): boolean {
+      if (nextUrl.value === "") {
+        fetch(`${baseURL}/pokemon/?limit=25`)
+          .then((res) => res.json())
+          .then((data) => {
+            nextUrl.value = data.next;
+            results.value = [...data.results];
+          });
+      } else {
+        fetch(`${nextUrl.value}`)
+          .then((res) => res.json())
+          .then((data) => {
+            nextUrl.value = data.next;
+            results.value = [...results.value, ...data.results];
+          });
+      }
+      return true;
+    }
 
-// fetch pokemons from pokedex api
-function fetchData() {
-  if (nextUrl.value == "") {
-    fetch(`${baseURL}/pokemon/?limit=25`)
-      .then((res) => res.json())
-      .then((data) => {
-        nextUrl.value = data.next;
-        results.value = [...data.results];
-      });
-  } else {
-    fetch(`${nextUrl.value}`)
-      .then((res) => res.json())
-      .then((data) => {
-        nextUrl.value = data.next;
-        results.value = [...results.value, ...data.results];
-      });
-  }
-  return true;
-}
+    // fetch pokemon type list
+    function fetchTypes(): boolean {
+      fetch(`${baseURL}/type`)
+        .then((res) => res.json())
+        .then((data) => {
+          pokemonTypes.value = [...data.results];
+        });
+      return true;
+    }
 
-// fetch pokemon type list
-function fetchTypes() {
-  fetch(`${baseURL}/type`)
-    .then((res) => res.json())
-    .then((data) => {
-      pokemonTypes.value = [...data.results];
+    // fetch pokemon by type
+    function fetchByType() {
+      fetch(`${selectedPokemonTypeUrl.value}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const pokemonByType = data.pokemon.map((poke: any) => poke.pokemon);
+          results.value = [...pokemonByType];
+
+          isLoading.value = false;
+        });
+    }
+
+    // fetch data on mounted
+    onMounted(() => {
+      fetchTypes();
+      fetchData();
+      if (fetchData() && fetchTypes()) {
+        isLoading.value = false;
+      }
     });
-  return true;
-}
 
-// fetch pokemon by type
-function fetchByType() {
-  fetch(`${selectedPokemonTypeUrl.value}`)
-    .then((res) => res.json())
-    .then((data) => {
-      const pokemonByType = data.pokemon.map((poke) => poke.pokemon);
-      results.value = [...pokemonByType];
-
-      isLoading.value = false;
+    // watch pokemon type
+    watch(selectedPokemonTypeUrl, () => {
+      isLoading.value = true;
+      fetchByType();
     });
-}
 
-// fetch data on mounted
-onMounted(() => {
-  fetchTypes();
-  fetchData();
-  if (fetchData() && fetchTypes()) {
-    isLoading.value = false;
-  }
+    function isShowAll(): boolean {
+      return currentMenu.value == menuOptions[0];
+    }
+
+    function isShowFilterByType(): boolean {
+      return currentMenu.value == menuOptions[1];
+    }
+
+    function selectMenu(value: string): void {
+      currentMenu.value = value;
+    }
+
+    return {
+      isShowAll,
+      isShowFilterByType,
+      selectMenu,
+      isLoading,
+      results,
+      menuOptions,
+      selectedPokemonTypeUrl,
+      pokemonTypes,
+      fetchData,
+    };
+  },
 });
-
-// watch pokemon type
-watch(selectedPokemonTypeUrl, () => {
-  isLoading.value = true;
-  fetchByType();
-});
-
-function isShowAll() {
-  return currentMenu.value == menuOptions[0];
-}
-
-function isShowFilterByType() {
-  return currentMenu.value == menuOptions[1];
-}
-
-function selectMenu(value) {
-  currentMenu.value = value;
-}
+/* eslint-disable */ 
 </script>
